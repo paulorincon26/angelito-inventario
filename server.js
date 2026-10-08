@@ -151,6 +151,7 @@ const path = require('path');
 // Servir archivos estáticos (incluye index.html)
 app.use(express.static(path.join(__dirname)));
 
-app.get('*', (req, res) => {
+// ✅ Reemplázalo exactamente por esto:
+app.get('/(.*)/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
