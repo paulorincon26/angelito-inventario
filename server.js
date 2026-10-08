@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -11,6 +12,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secreto_fallback';
 
 app.use(cors());
 app.use(express.json());
+
+// Servir archivos estáticos del frontend (index.html, estilos, etc.)
+app.use(express.static(path.join(__dirname)));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -75,7 +79,7 @@ function soloAdmin(req, res, next) {
   next();
 }
 
-// Rutas
+// Rutas de API
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await Usuario.findOne({ username });
@@ -142,16 +146,12 @@ app.delete('/api/productos/:id', verificarToken, soloAdmin, async (req, res) => 
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
-
-const path = require('path');
-
-// Servir archivos estáticos (incluye index.html)
-app.use(express.static(path.join(__dirname)));
-
-// Servir index.html para cualquier ruta no capturada previamente
+// Middleware universal para SPA (sirve index.html para cualquier ruta fuera de /api)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Arranque único del servidor al final de todo
+app.listen(PORT, () => {
+  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });
