@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Inventario</title>
+  <!-- Fuente Google: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'sans-serif'],
+          },
+          colors: {
+            rosewood: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              400: '#fb7185',
+              500: '#e07a86', // Palo de rosa suave
+              600: '#c55d6b', // Palo de rosa medio elegante
+              700: '#a3414f', // Palo de rosa profundo
+              800: '#883743',
+              900: '#72313b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #fdf4f5, #fbf7f7 50%, #f5ecee 100%);
+    }
+  </style>
+</head>
+<body class="text-stone-800 min-h-screen font-sans selection:bg-rosewood-200">
+
+  <!-- VISTA 1: LOGIN -->
+  <div id="vistaLogin" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white/90 backdrop-blur-md p-8 sm:p-10 rounded-3xl shadow-2xl shadow-rosewood-900/10 border border-rosewood-100 w-full max-w-md">
+      <div class="text-center mb-8">
+        <div class="inline-flex p-3.5 bg-rosewood-50 text-rosewood-600 rounded-2xl mb-3 shadow-inner border border-rosewood-100">
+          <i data-lucide="sparkles" class="w-8 h-8"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-stone-900 tracking-tight">Control Inventario</h2>
+        <p class="text-xs uppercase tracking-widest text-rosewood-600 font-semibold mt-1">Cosmética & Perfumería</p>
+      </div>
+
+      <form onsubmit="iniciarSesion(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-medium text-stone-600 mb-1.5 ml-1">Usuario</label>
+          <div class="relative">
+            <i data-lucide="user" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
+            <input type="text" id="loginUser" required placeholder="admin o empleado"
+                   class="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-stone-600 mb-1.5 ml-1">Contraseña</label>
+          <div class="relative">
+            <i data-lucide="lock" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
+            <input type="password" id="loginPass" required placeholder="••••••••"
+                   class="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+        </div>
+        <div id="loginError" class="text-xs text-rosewood-700 bg-rosewood-50 p-2.5 rounded-lg border border-rosewood-200 hidden font-medium text-center"></div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-rosewood-500 to-rosewood-600 hover:from-rosewood-600 hover:to-rosewood-700 text-white font-medium rounded-xl text-sm shadow-lg shadow-rosewood-500/25 hover:shadow-rosewood-600/30 transition transform active:scale-[0.98]">
+          Acceder al Panel
+        </button>
+      </form>
+
+      <div class="mt-8 pt-5 border-t border-rosewood-100 text-[11px] text-stone-400 text-center space-y-1">
+        <p><strong>Admin:</strong> admin / admin123</p>
+        <p><strong>Empleado:</strong> empleado / empleado123</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VISTA 2: DASHBOARD -->
+  <div id="vistaApp" class="hidden">
+    <!-- Barra Superior -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-rosewood-100 sticky top-0 z-20 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="flex items-center gap-3.5">
+          <div class="p-2.5 bg-rosewood-50 text-rosewood-600 rounded-2xl border border-rosewood-100 shadow-sm">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-stone-900 tracking-tight leading-none">Control Inventario</h1>
+            <div class="flex items-center gap-2 mt-1">
+              <span id="userBadge" class="text-[10px] tracking-wide font-bold px-2 py-0.5 rounded-full uppercase"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button onclick="abrirModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-rosewood-500 to-rosewood-600 hover:from-rosewood-600 hover:to-rosewood-700 text-white font-medium px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-rosewood-500/20 transition transform active:scale-95">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Nuevo Producto</span>
+          </button>
+          <button onclick="cerrarSesion()" title="Cerrar sesión" class="p-2.5 text-stone-400 hover:text-rosewood-600 hover:bg-rosewood-50 rounded-xl transition">
+            <i data-lucide="log-out" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      <!-- Banner de Selección Individual -->
+      <div id="bannerFiltroIndividual" class="hidden mb-6 bg-gradient-to-r from-rosewood-50 to-white border border-rosewood-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3 text-rosewood-800 text-sm font-medium">
+          <div class="p-2 bg-rosewood-100 rounded-xl text-rosewood-600">
+            <i data-lucide="sparkle" class="w-4 h-4"></i>
+          </div>
+          <span>Detalle exclusivo de: <strong id="lblProductoSeleccionado" class="font-bold text-rosewood-900"></strong></span>
+        </div>
+        <button onclick="deseleccionarProducto()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white text-rosewood-700 border border-rosewood-200 hover:border-rosewood-400 rounded-xl text-xs font-semibold hover:bg-rosewood-50 transition shadow-sm">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Ver lista completa
+        </button>
+      </div>
+
+      <!-- Tarjetas de Estadísticas Palo Rosa -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
+          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">#</div>
+          <p id="lblStat1" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Total Referencias</p>
+          <h3 id="statTotalItems" class="text-2xl font-bold mt-1 text-stone-900">0</h3>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
+          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">📦</div>
+          <p id="lblStat2" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Stock Total</p>
+          <h3 id="statTotalStock" class="text-2xl font-bold mt-1 text-stone-900">0</h3>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
+          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">$</div>
+          <p id="lblStat3" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Valor Inventario</p>
+          <h3 id="statTotalValue" class="text-2xl font-bold mt-1 text-rosewood-700 font-mono">$0.00</h3>
+        </div>
+
+        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
+          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">⚠️</div>
+          <p id="lblStat4" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Reordenar (Bajo)</p>
+          <h3 id="statLowStock" class="text-2xl font-bold mt-1 text-rose-500">0</h3>
+        </div>
+      </div>
+
+      <!-- Barra de Filtros -->
+      <div id="barraBusqueda" class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-rosewood-100 shadow-sm mb-6 flex flex-col sm:flex-row gap-3 justify-between items-center">
+        <div class="w-full sm:w-80 relative">
+          <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
+          <input type="text" id="busqueda" oninput="filtrar()" placeholder="Buscar producto, marca o SKU..."
+                 class="w-full pl-10 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+        </div>
+        <select id="filtroCategoria" onchange="filtrar()" class="w-full sm:w-auto px-4 py-2 border border-stone-200 rounded-xl text-sm bg-stone-50 text-stone-700 font-medium focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          <option value="">Todas las Categorías</option>
+          <option value="Maquillaje">Maquillaje</option>
+          <option value="Accesorios">Accesorios</option>
+          <option value="Perfumería">Perfumería</option>
+        </select>
+      </div>
+
+      <!-- Tabla de Productos -->
+      <div class="bg-white/90 backdrop-blur-sm border border-rosewood-100 rounded-3xl overflow-hidden shadow-xl shadow-rosewood-900/5">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[700px]">
+            <thead>
+              <tr class="bg-rosewood-50/60 border-b border-rosewood-100 text-stone-500 uppercase text-[11px] tracking-wider font-semibold">
+                <th class="py-4 px-5">SKU</th>
+                <th class="py-4 px-5">Producto / Marca</th>
+                <th class="py-4 px-5">Categoría</th>
+                <th class="py-4 px-5 text-right">P. Venta</th>
+                <th class="py-4 px-5 text-center">Stock</th>
+                <th class="py-4 px-5 text-center">Estado</th>
+                <th id="colAcciones" class="py-4 px-5 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaProductos" class="divide-y divide-rosewood-50 text-sm"></tbody>
+          </table>
+        </div>
+        <div id="sinResultados" class="hidden text-center py-12 text-stone-400 text-sm">
+          No hay productos disponibles para este filtro o selección.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: REGISTRAR / EDITAR PRODUCTO -->
+  <div id="modalProducto" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
+    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-rosewood-100 transform transition-all">
+      <div class="px-6 py-5 border-b border-rosewood-50 flex items-center justify-between bg-rosewood-50/40">
+        <h2 id="modalTitulo" class="font-bold text-lg text-stone-900 tracking-tight">Registrar Producto</h2>
+        <button onclick="cerrarModal()" class="text-stone-400 hover:text-rosewood-600 rounded-xl p-1 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <form id="formProducto" onsubmit="guardarProducto(event)" class="p-6 space-y-4">
+        <input type="hidden" id="prodId">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Código / SKU</label>
+            <input type="text" id="prodCodigo" required placeholder="Ej: MAQ-001" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm uppercase focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Categoría</label>
+            <select id="prodCategoria" required class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+              <option value="Maquillaje">Maquillaje</option>
+              <option value="Accesorios">Accesorios</option>
+              <option value="Perfumería">Perfumería</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Nombre</label>
+            <input type="text" id="prodNombre" required placeholder="Nombre del artículo" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Marca / Detalle</label>
+            <input type="text" id="prodMarca" placeholder="Ej: L'Oreal / 30ml" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Precio ($)</label>
+            <input type="number" id="prodPrecio" min="0" step="0.01" required placeholder="0.00" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Stock</label>
+            <input type="number" id="prodStock" min="0" required placeholder="0" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Mínimo</label>
+            <input type="number" id="prodMinimo" min="1" required placeholder="5" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+          </div>
+        </div>
+        <div class="pt-5 flex justify-end gap-3 border-t border-rosewood-50">
+          <button type="button" onclick="cerrarModal()" class="px-4 py-2 border border-stone-200 rounded-xl text-sm text-stone-600 hover:bg-stone-50 transition">Cancelar</button>
+          <button type="submit" class="px-5 py-2 bg-gradient-to-r from-rosewood-500 to-rosewood-600 text-white rounded-xl text-sm font-medium hover:from-rosewood-600 hover:to-rosewood-700 shadow-md shadow-rosewood-500/20 transition">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:5000/api';
+    let productos = [];
+    let usuarioActual = JSON.parse(sessionStorage.getItem('auth_user')) || null;
+    let idProductoSeleccionado = null;
+
+    // Login
+    async function iniciarSesion(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUser').value.trim();
+      const password = document.getElementById('loginPass').value.trim();
+      const errBox = document.getElementById('loginError');
+
+      try {
+        const res = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          errBox.innerText = data.mensaje || 'Error al iniciar sesión';
+          errBox.classList.remove('hidden');
+          return;
+        }
+
+        usuarioActual = data;
+        sessionStorage.setItem('auth_user', JSON.stringify(data));
+        errBox.classList.add('hidden');
+        verificarSesion();
+      } catch (err) {
+        errBox.innerText = 'No se pudo conectar con el servidor (verifica node server.js)';
+        errBox.classList.remove('hidden');
+      }
+    }
+
+    function cerrarSesion() {
+      sessionStorage.removeItem('auth_user');
+      usuarioActual = null;
+      idProductoSeleccionado = null;
+      verificarSesion();
+    }
+
+    function verificarSesion() {
+      if (usuarioActual && usuarioActual.token) {
+        document.getElementById('vistaLogin').classList.add('hidden');
+        document.getElementById('vistaApp').classList.remove('hidden');
+
+        const badge = document.getElementById('userBadge');
+        badge.innerText = `${usuarioActual.username} • ${usuarioActual.rol}`;
+        badge.className = `text-[10px] tracking-wider font-semibold px-2.5 py-0.5 rounded-full uppercase border ${
+          usuarioActual.rol === 'admin' 
+            ? 'bg-rosewood-100 text-rosewood-700 border-rosewood-200' 
+            : 'bg-stone-100 text-stone-700 border-stone-200'
+        }`;
+
+        if (usuarioActual.rol !== 'admin') {
+          document.getElementById('colAcciones').classList.add('hidden');
+        } else {
+          document.getElementById('colAcciones').classList.remove('hidden');
+        }
+
+        cargarProductos();
+      } else {
+        document.getElementById('vistaLogin').classList.remove('hidden');
+        document.getElementById('vistaApp').classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // Petición a MongoDB
+    async function cargarProductos() {
+      try {
+        const res = await fetch(`${API_URL}/productos`, {
+          headers: { 'Authorization': `Bearer ${usuarioActual.token}` }
+        });
+        if (res.status === 401 || res.status === 403) return cerrarSesion();
+        productos = await res.json();
+        renderizar();
+      } catch (err) {
+        console.error('Error al cargar productos:', err);
+      }
+    }
+
+    // Control de selección
+    function seleccionarProducto(id) {
+      idProductoSeleccionado = id;
+      renderizar();
+    }
+
+    function deseleccionarProducto() {
+      idProductoSeleccionado = null;
+      renderizar();
+    }
+
+    // Modal
+    function abrirModal(id = null) {
+      const modal = document.getElementById('modalProducto');
+      const form = document.getElementById('formProducto');
+      form.reset();
+
+      if (id) {
+        document.getElementById('modalTitulo').innerText = 'Editar Producto';
+        const item = productos.find(p => p._id === id);
+        if (item) {
+          document.getElementById('prodId').value = item._id;
+          document.getElementById('prodCodigo').value = item.codigo;
+          document.getElementById('prodCategoria').value = item.categoria;
+          document.getElementById('prodNombre').value = item.nombre;
+          document.getElementById('prodMarca').value = item.marca || '';
+          document.getElementById('prodPrecio').value = item.precio;
+          document.getElementById('prodStock').value = item.stock;
+          document.getElementById('prodMinimo').value = item.minimo;
+        }
+      } else {
+        document.getElementById('modalTitulo').innerText = 'Registrar Nuevo Producto';
+        document.getElementById('prodId').value = '';
+        document.getElementById('prodMinimo').value = 5;
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalProducto').classList.add('hidden');
+    }
+
+    // Guardar / Actualizar
+    async function guardarProducto(e) {
+      e.preventDefault();
+      const id = document.getElementById('prodId').value;
+      const datos = {
+        codigo: document.getElementById('prodCodigo').value.trim().toUpperCase(),
+        categoria: document.getElementById('prodCategoria').value,
+        nombre: document.getElementById('prodNombre').value.trim(),
+        marca: document.getElementById('prodMarca').value.trim(),
+        precio: parseFloat(document.getElementById('prodPrecio').value),
+        stock: parseInt(document.getElementById('prodStock').value, 10),
+        minimo: parseInt(document.getElementById('prodMinimo').value, 10)
+      };
+
+      const url = id ? `${API_URL}/productos/${id}` : `${API_URL}/productos`;
+      const metodo = id ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method: metodo,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${usuarioActual.token}`
+          },
+          body: JSON.stringify(datos)
+        });
+
+        if (res.ok) {
+          cerrarModal();
+          cargarProductos();
+        } else {
+          const error = await res.json();
+          alert(error.mensaje || error.detalle || 'Error al guardar');
+        }
+      } catch (err) {
+        alert('Error de conexión con el servidor');
+      }
+    }
+
+    // Eliminar
+    async function eliminarProducto(id) {
+      if (confirm('¿Deseas eliminar este registro de inventario permanentemente?')) {
+        try {
+          const res = await fetch(`${API_URL}/productos/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${usuarioActual.token}` }
+          });
+          if (res.ok) {
+            if (idProductoSeleccionado === id) idProductoSeleccionado = null;
+            cargarProductos();
+          } else {
+            alert('No tienes permisos para realizar esta acción');
+          }
+        } catch (err) {
+          alert('Error de conexión al eliminar');
+        }
+      }
+    }
+
+    // Ajuste de stock rápido
+    async function ajustarStock(id, delta) {
+      try {
+        const res = await fetch(`${API_URL}/productos/${id}/stock`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${usuarioActual.token}`
+          },
+          body: JSON.stringify({ delta })
+        });
+        if (res.ok) cargarProductos();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function filtrar() {
+      idProductoSeleccionado = null;
+      renderizar();
+    }
+
+    // Renderizar datos y estadísticas dinámicas
+    function renderizar() {
+      const tbody = document.getElementById('tablaProductos');
+      const emptyMsg = document.getElementById('sinResultados');
+      const banner = document.getElementById('bannerFiltroIndividual');
+      const barraBusqueda = document.getElementById('barraBusqueda');
+      tbody.innerHTML = '';
+      const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
+
+      let listaAMostrar = [];
+
+      if (idProductoSeleccionado) {
+        const pSel = productos.find(p => p._id === idProductoSeleccionado);
+        if (pSel) {
+          listaAMostrar = [pSel];
+          banner.classList.remove('hidden');
+          barraBusqueda.classList.add('hidden');
+          document.getElementById('lblProductoSeleccionado').innerText = `${pSel.nombre} (${pSel.codigo})`;
+
+          document.getElementById('lblStat1').innerText = "SKU Seleccionado";
+          document.getElementById('statTotalItems').innerText = pSel.codigo;
+
+          document.getElementById('lblStat2').innerText = "Stock Actual";
+          document.getElementById('statTotalStock').innerText = pSel.stock;
+
+          document.getElementById('lblStat3').innerText = "Valor en Stock";
+          document.getElementById('statTotalValue').innerText = `$${(pSel.precio * pSel.stock).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+          document.getElementById('lblStat4').innerText = "Mínimo Requerido";
+          document.getElementById('statLowStock').innerText = pSel.minimo;
+        } else {
+          idProductoSeleccionado = null;
+        }
+      }
+
+      if (!idProductoSeleccionado) {
+        banner.classList.add('hidden');
+        barraBusqueda.classList.remove('hidden');
+
+        const query = document.getElementById('busqueda').value.toLowerCase();
+        const cat = document.getElementById('filtroCategoria').value;
+
+        listaAMostrar = productos.filter(p => {
+          const matchTxt = p.nombre.toLowerCase().includes(query) || 
+                           p.codigo.toLowerCase().includes(query) || 
+                           (p.marca && p.marca.toLowerCase().includes(query));
+          const matchCat = !cat || p.categoria === cat;
+          return matchTxt && matchCat;
+        });
+
+        document.getElementById('lblStat1').innerText = cat ? `Ref. (${cat})` : "Total Referencias";
+        document.getElementById('lblStat2').innerText = cat ? `Stock (${cat})` : "Stock Total";
+        document.getElementById('lblStat3').innerText = cat ? `Valor (${cat})` : "Valor Inventario";
+        document.getElementById('lblStat4').innerText = "Reordenar (Bajo)";
+
+        document.getElementById('statTotalItems').innerText = listaAMostrar.length;
+        document.getElementById('statTotalStock').innerText = listaAMostrar.reduce((acc, curr) => acc + curr.stock, 0);
+
+        const totalVal = listaAMostrar.reduce((acc, curr) => acc + (curr.precio * curr.stock), 0);
+        document.getElementById('statTotalValue').innerText = `$${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+        document.getElementById('statLowStock').innerText = listaAMostrar.filter(p => p.stock <= p.minimo).length;
+      }
+
+      // Dibujar tabla
+      if (listaAMostrar.length === 0) {
+        emptyMsg.classList.remove('hidden');
+      } else {
+        emptyMsg.classList.add('hidden');
+        listaAMostrar.forEach(p => {
+          const bajoStock = p.stock <= p.minimo;
+          const tr = document.createElement('tr');
+          const estaSeleccionado = idProductoSeleccionado === p._id;
+
+          tr.className = `cursor-pointer transition-all border-b border-rosewood-50 ${
+            estaSeleccionado ? 'bg-rosewood-50/80 border-l-4 border-l-rosewood-500' : 'hover:bg-rosewood-50/30'
+          }`;
+
+          tr.onclick = (e) => {
+            if (e.target.closest('button')) return;
+            if (idProductoSeleccionado === p._id) deseleccionarProducto();
+            else seleccionarProducto(p._id);
+          };
+
+          tr.innerHTML = `
+            <td class="py-4 px-5 font-mono text-xs font-semibold text-stone-500">
+              <div class="flex items-center gap-2">
+                <i data-lucide="${estaSeleccionado ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 ${estaSeleccionado ? 'text-rosewood-600' : 'text-stone-300'}"></i>
+                <span>${p.codigo}</span>
+              </div>
+            </td>
+            <td class="py-4 px-5">
+              <div class="font-medium text-stone-900">${p.nombre}</div>
+              <div class="text-xs text-stone-400">${p.marca || '-'}</div>
+            </td>
+            <td class="py-4 px-5">
+              <span class="inline-block px-3 py-1 rounded-full text-xs font-medium border
+                ${p.categoria === 'Maquillaje' ? 'bg-rose-50 text-rose-700 border-rose-100' : ''}
+                ${p.categoria === 'Accesorios' ? 'bg-purple-50 text-purple-700 border-purple-100' : ''}
+                ${p.categoria === 'Perfumería' ? 'bg-amber-50 text-amber-800 border-amber-100' : ''}">
+                ${p.categoria}
+              </span>
+            </td>
+            <td class="py-4 px-5 text-right font-medium text-stone-800 font-mono">$${p.precio.toFixed(2)}</td>
+            <td class="py-4 px-5 text-center">
+              ${esAdmin ? `
+                <div class="inline-flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl">
+                  <button onclick="ajustarStock('${p._id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-white hover:bg-rosewood-100 text-xs font-bold text-stone-700 transition">-</button>
+                  <span class="w-8 font-bold text-sm text-stone-800">${p.stock}</span>
+                  <button onclick="ajustarStock('${p._id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-white hover:bg-rosewood-100 text-xs font-bold text-stone-700 transition">+</button>
+                </div>
+              ` : `<span class="font-bold text-sm text-stone-800">${p.stock}</span>`}
+            </td>
+            <td class="py-4 px-5 text-center">
+              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border ${bajoStock ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
+                ${bajoStock ? 'Reordenar' : 'Óptimo'}
+              </span>
+            </td>
+            ${esAdmin ? `
+              <td class="py-4 px-5 text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <button onclick="abrirModal('${p._id}')" title="Editar" class="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-rosewood-50 rounded-lg transition">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                  </button>
+                  <button onclick="eliminarProducto('${p._id}')" title="Eliminar" class="p-1.5 text-stone-400 hover:text-rosewood-600 hover:bg-rosewood-50 rounded-lg transition">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                  </button>
+                </div>
+              </td>
+            ` : ''}
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      lucide.createIcons();
+    }
+
+    window.onload = verificarSesion;
+  </script>
+</body>
+</html>
