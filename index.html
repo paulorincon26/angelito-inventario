@@ -3,270 +3,600 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Inventario</title>
-  <!-- Fuente Google: Outfit -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS -->
+  <title>BeautyStock - Panel de Gestión Empresarial</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-          },
           colors: {
             rosewood: {
-              50: '#fff1f2',
-              100: '#ffe4e6',
-              200: '#fecdd3',
-              300: '#fda4af',
-              400: '#fb7185',
-              500: '#e07a86', // Palo de rosa suave
-              600: '#c55d6b', // Palo de rosa medio elegante
-              700: '#a3414f', // Palo de rosa profundo
-              800: '#883743',
-              900: '#72313b',
+              50: '#fdf4f5',
+              100: '#fbe8ea',
+              200: '#f7d5d8',
+              500: '#dc4c64',
+              600: '#b8324f',
+              700: '#94223c',
+              800: '#7a1f33',
+              900: '#5c1626'
             }
           }
         }
       }
     }
   </script>
-
-  <style>
-    body {
-      background: radial-gradient(circle at top right, #fdf4f5, #fbf7f7 50%, #f5ecee 100%);
-    }
-  </style>
 </head>
-<body class="text-stone-800 min-h-screen font-sans selection:bg-rosewood-200">
+<body class="bg-stone-100/70 text-stone-800 min-h-screen font-sans antialiased">
 
-  <!-- VISTA 1: LOGIN -->
-  <div id="vistaLogin" class="min-h-screen flex items-center justify-center p-4">
-    <div class="bg-white/90 backdrop-blur-md p-8 sm:p-10 rounded-3xl shadow-2xl shadow-rosewood-900/10 border border-rosewood-100 w-full max-w-md">
+  <!-- PANTALLA DE LOGIN -->
+  <div id="pantallaLogin" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-stone-200/80">
       <div class="text-center mb-8">
-        <div class="inline-flex p-3.5 bg-rosewood-50 text-rosewood-600 rounded-2xl mb-3 shadow-inner border border-rosewood-100">
-          <i data-lucide="sparkles" class="w-8 h-8"></i>
+        <div class="w-14 h-14 bg-rosewood-600 rounded-2xl mx-auto flex items-center justify-center shadow-lg shadow-rosewood-600/30 text-white font-extrabold text-2xl mb-3">
+          B
         </div>
-        <h2 class="text-3xl font-bold text-stone-900 tracking-tight">Control Inventario</h2>
-        <p class="text-xs uppercase tracking-widest text-rosewood-600 font-semibold mt-1">Cosmética & Perfumería</p>
+        <h1 class="text-2xl font-bold tracking-tight text-stone-800">BeautyStock</h1>
+        <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider font-semibold">Sistema Integral de Control</p>
       </div>
-
-      <form onsubmit="iniciarSesion(event)" class="space-y-4">
+      <form onsubmit="iniciarSesion(event)" class="space-y-5">
         <div>
-          <label class="block text-xs font-medium text-stone-600 mb-1.5 ml-1">Usuario</label>
-          <div class="relative">
-            <i data-lucide="user" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
-            <input type="text" id="loginUser" required placeholder="admin o empleado"
-                   class="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
-          </div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Usuario</label>
+          <input type="text" id="loginUsuario" required class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-rosewood-500/20 focus:border-rosewood-600 outline-none transition" placeholder="admin o empleado">
         </div>
         <div>
-          <label class="block text-xs font-medium text-stone-600 mb-1.5 ml-1">Contraseña</label>
-          <div class="relative">
-            <i data-lucide="lock" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
-            <input type="password" id="loginPass" required placeholder="••••••••"
-                   class="w-full pl-10 pr-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
-          </div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1.5">Contraseña</label>
+          <input type="password" id="loginPass" required class="w-full border border-stone-300 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-rosewood-500/20 focus:border-rosewood-600 outline-none transition" placeholder="••••••••">
         </div>
-        <div id="loginError" class="text-xs text-rosewood-700 bg-rosewood-50 p-2.5 rounded-lg border border-rosewood-200 hidden font-medium text-center"></div>
-        <button type="submit" class="w-full py-3 bg-gradient-to-r from-rosewood-500 to-rosewood-600 hover:from-rosewood-600 hover:to-rosewood-700 text-white font-medium rounded-xl text-sm shadow-lg shadow-rosewood-500/25 hover:shadow-rosewood-600/30 transition transform active:scale-[0.98]">
-          Acceder al Panel
+        <p id="errorLogin" class="text-rosewood-600 text-xs text-center font-medium hidden">Credenciales inválidas</p>
+        <button type="submit" class="w-full bg-rosewood-600 hover:bg-rosewood-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-lg shadow-rosewood-600/25 active:scale-[0.99]">
+          Ingresar al Sistema
         </button>
       </form>
-
-      <div class="mt-8 pt-5 border-t border-rosewood-100 text-[11px] text-stone-400 text-center space-y-1">
-        <p><strong>Admin:</strong> admin / admin123</p>
-        <p><strong>Empleado:</strong> empleado / empleado123</p>
-      </div>
     </div>
   </div>
 
-  <!-- VISTA 2: DASHBOARD -->
-  <div id="vistaApp" class="hidden">
-    <!-- Barra Superior -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-rosewood-100 sticky top-0 z-20 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        <div class="flex items-center gap-3.5">
-          <div class="p-2.5 bg-rosewood-50 text-rosewood-600 rounded-2xl border border-rosewood-100 shadow-sm">
-            <i data-lucide="sparkles" class="w-6 h-6"></i>
+  <!-- PANEL PRINCIPAL (DASHBOARD) -->
+  <div id="pantallaDashboard" class="hidden min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b border-stone-200/80 sticky top-0 z-30 px-6 py-3.5 flex justify-between items-center shadow-sm">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-rosewood-700 to-rosewood-500 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-rosewood-600/20">
+          B
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-stone-900 leading-tight">BeautyStock</h2>
+          <span class="text-[10px] text-stone-400 font-semibold tracking-wider uppercase block">Gestión Corporativa</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 bg-stone-50 px-3 py-1.5 rounded-full border border-stone-200">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span id="badgeUsuario" class="text-xs font-medium text-stone-700"></span>
+        </div>
+        <button onclick="cerrarSesion()" class="text-stone-400 hover:text-rosewood-600 p-1.5 rounded-lg hover:bg-stone-50 transition" title="Cerrar Sesión">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="max-w-7xl mx-auto w-full p-6 space-y-6 flex-1">
+      
+      <!-- Navegación por Pestañas -->
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-3">
+        <div class="flex gap-2 bg-stone-200/60 p-1 rounded-xl">
+          <button id="tabDash" onclick="cambiarVista('dashboard')" class="px-4 py-2 font-medium text-xs rounded-lg transition">
+            Dashboard Ejecutivo
+          </button>
+          <button id="tabInv" onclick="cambiarVista('inventario')" class="px-4 py-2 font-medium text-xs rounded-lg transition">
+            Inventario de Productos
+          </button>
+          <button id="tabSal" onclick="cambiarVista('salidas')" class="px-4 py-2 font-medium text-xs rounded-lg transition">
+            Registro de Salidas
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="exportarExcelInventario()" class="flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium px-3.5 py-2 rounded-xl transition shadow-sm">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>
+            Excel Inventario
+          </button>
+          <button onclick="exportarExcelSalidas()" class="flex items-center gap-1.5 bg-stone-800 hover:bg-black text-white text-xs font-medium px-3.5 py-2 rounded-xl transition shadow-sm">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            Excel Salidas
+          </button>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- VISTA 1: DASHBOARD ANALÍTICO PROFESIONAL  -->
+      <!-- ========================================== -->
+      <section id="seccionDashboard" class="space-y-8">
+
+        <!-- 1. BLOQUE DE TARJETAS KPI: INVENTARIO FÍSICO -->
+        <div class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="boxes" class="w-4 h-4 text-emerald-600"></i>
+                Consolidado Financiero de Inventario (Activos)
+              </h3>
+              <p class="text-xs text-stone-400">Valuación actual de mercadería y control de existencias en tiempo real</p>
+            </div>
+            
+            <!-- SELECTOR DE FILTRO POR CATEGORÍA EN INVENTARIO -->
+            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-stone-200/80 shadow-sm">
+              <label for="filtroCategoriaDash" class="text-xs font-bold text-stone-500 uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="filter" class="w-3.5 h-3.5 text-rosewood-600"></i>
+                Categoría:
+              </label>
+              <select id="filtroCategoriaDash" onchange="aplicarFiltroCategoriaDashboard()" class="text-xs font-semibold text-stone-800 bg-transparent outline-none cursor-pointer">
+                <option value="TODAS">Todas las categorías</option>
+                <option value="Maquillaje">Maquillaje</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Perfumería">Perfumería</option>
+              </select>
+            </div>
           </div>
-          <div>
-            <h1 class="text-lg font-bold text-stone-900 tracking-tight leading-none">Control Inventario</h1>
-            <div class="flex items-center gap-2 mt-1">
-              <span id="userBadge" class="text-[10px] tracking-wide font-bold px-2 py-0.5 rounded-full uppercase"></span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Valorización de Stock</span>
+                <span class="p-2 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="dollar-sign" class="w-4 h-4"></i></span>
+              </div>
+              <p id="dashInvValorTotal" class="text-2xl font-black text-stone-900 mt-3">$0.00</p>
+              <span class="text-[11px] text-emerald-600 font-medium flex items-center gap-1 mt-1">
+                <i data-lucide="shield-check" class="w-3 h-3"></i> Activo en bodega
+              </span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Unidades Disponibles</span>
+                <span class="p-2 rounded-xl bg-blue-50 text-blue-600"><i data-lucide="package" class="w-4 h-4"></i></span>
+              </div>
+              <p id="dashInvStockTotal" class="text-2xl font-black text-stone-900 mt-3">0</p>
+              <span class="text-[11px] text-stone-500 font-medium mt-1 block">Artículos físicos</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Líneas de Producto</span>
+                <span class="p-2 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="layers" class="w-4 h-4"></i></span>
+              </div>
+              <p id="dashInvReferencias" class="text-2xl font-black text-stone-900 mt-3">0</p>
+              <span class="text-[11px] text-stone-500 font-medium mt-1 block">Códigos clasificados</span>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <div class="flex justify-between items-start">
+                <span class="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Alerta: Por Vencer</span>
+                <span class="p-2 rounded-xl bg-amber-50 text-amber-600"><i data-lucide="clock-alert" class="w-4 h-4"></i></span>
+              </div>
+              <p id="dashInvKpiPorVencer" class="text-2xl font-black text-amber-600 mt-3">0</p>
+              <span class="text-[11px] text-amber-600 font-medium mt-1 block">Artículos en riesgo (≤ 30 días)</span>
+            </div>
+          </div>
+
+          <!-- TABLA: DETALLE DE PRECIOS Y VALOR POR PRODUCTO -->
+          <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-stone-50/50">
+              <div class="flex items-center gap-2">
+                <h4 class="text-xs font-bold text-stone-700 uppercase tracking-wider">Detalle de Precios y Valor por Producto</h4>
+                <span id="badgeFiltroActivo" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-stone-200 text-stone-700">Todas</span>
+              </div>
+              <button onclick="exportarExcelInventario()" class="text-xs text-emerald-700 font-medium flex items-center gap-1 hover:underline">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar tabla a Excel
+              </button>
+            </div>
+            <div class="overflow-x-auto max-h-96">
+              <table class="w-full text-left text-xs text-stone-600">
+                <thead class="bg-stone-50 text-stone-500 uppercase font-semibold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-3">Código</th>
+                    <th class="p-3">Producto</th>
+                    <th class="p-3">Marca</th>
+                    <th class="p-3">Referencia</th>
+                    <th class="p-3">Categoría</th>
+                    <th class="p-3">F. Vencimiento</th>
+                    <th class="p-3 text-right">Precio Venta</th>
+                    <th class="p-3 text-center">Stock Actual</th>
+                    <th class="p-3 text-right">Valor en Stock</th>
+                    <th class="p-3 text-center">Estado</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaDashProductosBody" class="divide-y divide-stone-100"></tbody>
+              </table>
             </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <button onclick="abrirModal()" class="inline-flex items-center gap-2 bg-gradient-to-r from-rosewood-500 to-rosewood-600 hover:from-rosewood-600 hover:to-rosewood-700 text-white font-medium px-4 py-2.5 rounded-xl text-xs sm:text-sm shadow-md shadow-rosewood-500/20 transition transform active:scale-95">
-            <i data-lucide="plus" class="w-4 h-4"></i>
-            <span>Nuevo Producto</span>
-          </button>
-          <button onclick="cerrarSesion()" title="Cerrar sesión" class="p-2.5 text-stone-400 hover:text-rosewood-600 hover:bg-rosewood-50 rounded-xl transition">
-            <i data-lucide="log-out" class="w-5 h-5"></i>
-          </button>
-        </div>
-      </div>
-    </header>
+        <!-- 2. BLOQUE DE GANANCIAS DE VENTAS -->
+        <div class="space-y-4 pt-6 border-t border-stone-200">
+          <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div>
+              <h3 class="text-sm font-bold text-stone-800 uppercase tracking-wider flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-600"></i>
+                Ganancias de Ventas: Diarias, Semanales y Quincenales
+              </h3>
+              <p class="text-xs text-stone-400">Analiza tus ingresos filtrando por rango de fechas y por categoría específica</p>
+            </div>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-      <!-- Banner de Selección Individual -->
-      <div id="bannerFiltroIndividual" class="hidden mb-6 bg-gradient-to-r from-rosewood-50 to-white border border-rosewood-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-        <div class="flex items-center gap-3 text-rosewood-800 text-sm font-medium">
-          <div class="p-2 bg-rosewood-100 rounded-xl text-rosewood-600">
-            <i data-lucide="sparkle" class="w-4 h-4"></i>
+            <form onsubmit="consultarReporteVentas(event)" class="flex flex-wrap items-end gap-2 bg-white p-2.5 rounded-2xl border border-stone-200/80 shadow-sm w-full lg:w-auto">
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-0.5">Categoría</label>
+                <select id="filtroCategoriaGanancias" class="border border-stone-200 rounded-xl px-2.5 py-1.5 text-xs bg-stone-50 outline-none focus:ring-1 focus:ring-rosewood-500 font-medium">
+                  <option value="TODAS">Todas las categorías</option>
+                  <option value="Maquillaje">Maquillaje</option>
+                  <option value="Accesorios">Accesorios</option>
+                  <option value="Perfumería">Perfumería</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-0.5">Desde</label>
+                <input type="date" id="filtroFechaInicio" required class="border border-stone-200 rounded-xl px-2.5 py-1.5 text-xs bg-stone-50 outline-none focus:ring-1 focus:ring-rosewood-500">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-0.5">Hasta</label>
+                <input type="date" id="filtroFechaFin" required class="border border-stone-200 rounded-xl px-2.5 py-1.5 text-xs bg-stone-50 outline-none focus:ring-1 focus:ring-rosewood-500">
+              </div>
+              <button type="submit" class="bg-rosewood-600 hover:bg-rosewood-700 text-white font-medium px-3.5 py-2 rounded-xl text-xs transition shadow-sm">
+                Filtrar Reporte
+              </button>
+              <button type="button" onclick="exportarExcelVentasFiltradas()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-3 py-2 rounded-xl text-xs transition flex items-center gap-1 shadow-sm">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Excel
+              </button>
+            </form>
           </div>
-          <span>Detalle exclusivo de: <strong id="lblProductoSeleccionado" class="font-bold text-rosewood-900"></strong></span>
-        </div>
-        <button onclick="deseleccionarProducto()" class="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white text-rosewood-700 border border-rosewood-200 hover:border-rosewood-400 rounded-xl text-xs font-semibold hover:bg-rosewood-50 transition shadow-sm">
-          <i data-lucide="arrow-left" class="w-4 h-4"></i> Ver lista completa
-        </button>
-      </div>
 
-      <!-- Tarjetas de Estadísticas Palo Rosa -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
-          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">#</div>
-          <p id="lblStat1" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Total Referencias</p>
-          <h3 id="statTotalItems" class="text-2xl font-bold mt-1 text-stone-900">0</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-gradient-to-tr from-emerald-800 to-emerald-600 text-white p-5 rounded-2xl shadow-sm">
+              <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-200">Ganancias / Ingresos Totales</span>
+              <p id="reporteTotalDinero" class="text-3xl font-black mt-2">$0.00</p>
+              <span id="labelReporteCategoria" class="text-xs text-emerald-100 font-medium mt-1 block">Todas las categorías</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Unidades Vendidas</span>
+              <p id="reporteTotalUnidades" class="text-3xl font-black text-stone-900 mt-2">0</p>
+              <span class="text-xs text-stone-500 font-medium mt-1 block">Artículos entregados a clientes</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-stone-400">Total Operaciones</span>
+              <p id="reporteTotalTransacciones" class="text-3xl font-black text-stone-900 mt-2">0</p>
+              <span class="text-xs text-stone-500 font-medium mt-1 block">Transacciones de venta realizadas</span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
+            <div class="border-b border-stone-100 bg-stone-50/60 p-2 flex flex-wrap gap-2">
+              <button onclick="cambiarSubTabGanancias('dia')" id="subTabDia" class="px-3.5 py-1.5 font-bold text-xs rounded-xl bg-white text-stone-900 shadow-sm transition">
+                Ganancias por Día
+              </button>
+              <button onclick="cambiarSubTabGanancias('semana')" id="subTabSemana" class="px-3.5 py-1.5 font-semibold text-xs rounded-xl text-stone-500 hover:text-stone-800 transition">
+                Ganancias Semanales
+              </button>
+              <button onclick="cambiarSubTabGanancias('quincena')" id="subTabQuincena" class="px-3.5 py-1.5 font-semibold text-xs rounded-xl text-stone-500 hover:text-stone-800 transition">
+                Ganancias Quincenales
+              </button>
+              <button onclick="cambiarSubTabGanancias('detalle')" id="subTabDetalle" class="px-3.5 py-1.5 font-semibold text-xs rounded-xl text-stone-500 hover:text-stone-800 transition">
+                Detalle Transacción por Transacción
+              </button>
+            </div>
+
+            <div id="vistaGananciaDia" class="overflow-x-auto max-h-80">
+              <table class="w-full text-left text-xs text-stone-600">
+                <thead class="bg-stone-50 text-stone-500 uppercase font-semibold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-3">Fecha del Día</th>
+                    <th class="p-3 text-center">Unidades Vendidas</th>
+                    <th class="p-3 text-center">N° Operaciones</th>
+                    <th class="p-3 text-right">Ganancia / Recaudación Total</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaGananciasDiaBody" class="divide-y divide-stone-100"></tbody>
+              </table>
+            </div>
+
+            <div id="vistaGananciaSemana" class="hidden overflow-x-auto max-h-80">
+              <table class="w-full text-left text-xs text-stone-600">
+                <thead class="bg-stone-50 text-stone-500 uppercase font-semibold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-3">Semana del Año</th>
+                    <th class="p-3 text-center">Unidades Vendidas</th>
+                    <th class="p-3 text-center">N° Operaciones</th>
+                    <th class="p-3 text-right">Ganancia / Recaudación Total</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaGananciasSemanaBody" class="divide-y divide-stone-100"></tbody>
+              </table>
+            </div>
+
+            <div id="vistaGananciaQuincena" class="hidden overflow-x-auto max-h-80">
+              <table class="w-full text-left text-xs text-stone-600">
+                <thead class="bg-stone-50 text-stone-500 uppercase font-semibold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-3">Quincena</th>
+                    <th class="p-3 text-center">Unidades Vendidas</th>
+                    <th class="p-3 text-center">N° Operaciones</th>
+                    <th class="p-3 text-right">Ganancia / Recaudación Total</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaGananciasQuincenaBody" class="divide-y divide-stone-100"></tbody>
+              </table>
+            </div>
+
+            <div id="vistaGananciaDetalle" class="hidden overflow-x-auto max-h-80">
+              <table class="w-full text-left text-xs text-stone-600">
+                <thead class="bg-stone-50 text-stone-500 uppercase font-semibold sticky top-0 border-b">
+                  <tr>
+                    <th class="p-3">Fecha y Hora</th>
+                    <th class="p-3">Código</th>
+                    <th class="p-3">Producto</th>
+                    <th class="p-3">Categoría</th>
+                    <th class="p-3 text-center">Cant.</th>
+                    <th class="p-3 text-right">Precio Unitario</th>
+                    <th class="p-3 text-right">Subtotal</th>
+                    <th class="p-3">Vendedor</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaReporteVentasBody" class="divide-y divide-stone-100"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
-          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">📦</div>
-          <p id="lblStat2" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Stock Total</p>
-          <h3 id="statTotalStock" class="text-2xl font-bold mt-1 text-stone-900">0</h3>
+        <!-- 3. 🚨 ALERTA CRÍTICA: PRODUCTOS PRÓXIMOS A VENCER (UBICADO AL FINAL DEL DASHBOARD) -->
+        <div id="contenedorAlertaVencimiento" class="hidden bg-amber-50 border border-amber-200 rounded-3xl p-6 shadow-sm space-y-4 pt-6 border-t border-stone-200">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                  Alerta: Productos Próximos a Vencer (≤ 30 días o Vencidos)
+                  <span id="badgeContadorPorVencer" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-amber-600 text-white">0</span>
+                </h3>
+                <p class="text-xs text-amber-700">Toma medidas inmediatas de rotación, descuento o retiro para evitar pérdidas de mercadería</p>
+              </div>
+            </div>
+            <button onclick="toggleTablaVencimientos()" class="text-xs font-bold text-amber-900 hover:underline flex items-center gap-1">
+              <span id="textoToggleVencimiento">Ocultar Detalle</span> &uarr;
+            </button>
+          </div>
+
+          <div id="tablaVencimientosColapsable" class="overflow-x-auto max-h-72 bg-white rounded-2xl border border-amber-200/70 shadow-inner">
+            <table class="w-full text-left text-xs text-stone-600">
+              <thead class="bg-amber-100/60 text-amber-900 uppercase font-semibold sticky top-0 border-b border-amber-200">
+                <tr>
+                  <th class="p-3">Código</th>
+                  <th class="p-3">Producto</th>
+                  <th class="p-3">Marca / Ref.</th>
+                  <th class="p-3">Categoría</th>
+                  <th class="p-3">Fecha Vencimiento</th>
+                  <th class="p-3 text-center">Stock</th>
+                  <th class="p-3 text-center">Estado / Días Restantes</th>
+                </tr>
+              </thead>
+              <tbody id="tablaAlertasVencimientoBody" class="divide-y divide-amber-100/60"></tbody>
+            </table>
+          </div>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
-          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">$</div>
-          <p id="lblStat3" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Valor Inventario</p>
-          <h3 id="statTotalValue" class="text-2xl font-bold mt-1 text-rosewood-700 font-mono">$0.00</h3>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA 2: INVENTARIO DE PRODUCTOS (CRUD)   -->
+      <!-- ========================================== -->
+      <section id="seccionInventario" class="hidden space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div class="relative w-full sm:w-80">
+            <input type="text" id="busquedaInput" oninput="filtrarProductos()" placeholder="Buscar por código, nombre, marca o ref..." class="border border-stone-200 rounded-xl pl-9 pr-3.5 py-2.5 text-xs w-full bg-white outline-none focus:ring-2 focus:ring-rosewood-500/20">
+            <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3 top-3"></i>
+          </div>
+          <div class="flex gap-2 w-full sm:w-auto">
+            <button onclick="exportarExcelInventario()" class="flex-1 sm:flex-none bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar Inventario
+            </button>
+            <button id="btnNuevoProducto" onclick="abrirModal()" class="flex-1 sm:flex-none bg-rosewood-600 hover:bg-rosewood-700 text-white font-medium px-4 py-2.5 rounded-xl text-xs hidden transition shadow-md shadow-rosewood-600/20">
+              + Nuevo Producto
+            </button>
+          </div>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-sm p-5 rounded-2xl border border-rosewood-100 shadow-sm relative overflow-hidden group hover:border-rosewood-300 transition">
-          <div class="absolute -right-2 -bottom-2 text-rosewood-50 text-5xl font-black select-none pointer-events-none group-hover:scale-110 transition">⚠️</div>
-          <p id="lblStat4" class="text-[11px] font-semibold text-rosewood-600 uppercase tracking-wider">Reordenar (Bajo)</p>
-          <h3 id="statLowStock" class="text-2xl font-bold mt-1 text-rose-500">0</h3>
-        </div>
-      </div>
-
-      <!-- Barra de Filtros -->
-      <div id="barraBusqueda" class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-rosewood-100 shadow-sm mb-6 flex flex-col sm:flex-row gap-3 justify-between items-center">
-        <div class="w-full sm:w-80 relative">
-          <i data-lucide="search" class="w-4 h-4 text-stone-400 absolute left-3.5 top-3.5"></i>
-          <input type="text" id="busqueda" oninput="filtrar()" placeholder="Buscar producto, marca o SKU..."
-                 class="w-full pl-10 pr-4 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
-        </div>
-        <select id="filtroCategoria" onchange="filtrar()" class="w-full sm:w-auto px-4 py-2 border border-stone-200 rounded-xl text-sm bg-stone-50 text-stone-700 font-medium focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
-          <option value="">Todas las Categorías</option>
-          <option value="Maquillaje">Maquillaje</option>
-          <option value="Accesorios">Accesorios</option>
-          <option value="Perfumería">Perfumería</option>
-        </select>
-      </div>
-
-      <!-- Tabla de Productos -->
-      <div class="bg-white/90 backdrop-blur-sm border border-rosewood-100 rounded-3xl overflow-hidden shadow-xl shadow-rosewood-900/5">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[700px]">
-            <thead>
-              <tr class="bg-rosewood-50/60 border-b border-rosewood-100 text-stone-500 uppercase text-[11px] tracking-wider font-semibold">
-                <th class="py-4 px-5">SKU</th>
-                <th class="py-4 px-5">Producto / Marca</th>
-                <th class="py-4 px-5">Categoría</th>
-                <th class="py-4 px-5 text-right">P. Venta</th>
-                <th class="py-4 px-5 text-center">Stock</th>
-                <th class="py-4 px-5 text-center">Estado</th>
-                <th id="colAcciones" class="py-4 px-5 text-center">Acciones</th>
+        <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-x-auto">
+          <table class="w-full text-left text-xs text-stone-600">
+            <thead class="bg-stone-50 border-b text-stone-500 uppercase font-semibold">
+              <tr>
+                <th class="p-4">Código</th>
+                <th class="p-4">Producto</th>
+                <th class="p-4">Marca</th>
+                <th class="p-4">Referencia</th>
+                <th class="p-4">Categoría</th>
+                <th class="p-4">F. Vencimiento</th>
+                <th class="p-4 text-right">Precio</th>
+                <th class="p-4 text-center">Stock</th>
+                <th class="p-4 text-center">Estado</th>
+                <th id="thAcciones" class="p-4 text-center hidden">Acciones</th>
               </tr>
             </thead>
-            <tbody id="tablaProductos" class="divide-y divide-rosewood-50 text-sm"></tbody>
+            <tbody id="tablaProductosBody" class="divide-y divide-stone-100"></tbody>
           </table>
         </div>
-        <div id="sinResultados" class="hidden text-center py-12 text-stone-400 text-sm">
-          No hay productos disponibles para este filtro o selección.
+      </section>
+
+      <!-- ========================================== -->
+      <!-- VISTA 3: REGISTRO Y GESTIÓN DE SALIDAS     -->
+      <!-- ========================================== -->
+      <section id="seccionSalidas" class="hidden space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-stone-200/80 shadow-sm space-y-4">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-bold text-stone-900 uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="minus-circle" class="w-4 h-4 text-rosewood-600"></i>
+              Registrar Salida de Mercadería
+            </h3>
+            <button onclick="exportarExcelSalidas()" class="text-xs text-stone-700 hover:text-black font-semibold flex items-center gap-1">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> Exportar Salidas a Excel
+            </button>
+          </div>
+          
+          <form id="formSalida" onsubmit="registrarSalida(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Producto</label>
+              <select id="salidaProductoSelect" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-stone-50 outline-none focus:ring-2 focus:ring-rosewood-500/20"></select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Cantidad a descontar</label>
+              <input type="number" id="salidaCantidad" min="1" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-white outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="Ej: 1" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Motivo de salida</label>
+              <select id="salidaMotivo" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-stone-50 outline-none focus:ring-2 focus:ring-rosewood-500/20">
+                <option value="Venta">Venta a cliente</option>
+                <option value="Uso en salón">Uso en salón / cabina</option>
+                <option value="Dañado/Vencido">Dañado o Vencido</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button type="submit" class="w-full bg-rosewood-600 hover:bg-rosewood-700 text-white font-medium py-2.5 rounded-xl text-xs shadow-md shadow-rosewood-600/20 transition">
+                Descontar de Stock
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
+
+        <div class="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-x-auto">
+          <table class="w-full text-left text-xs text-stone-600">
+            <thead class="bg-stone-50 border-b text-stone-500 uppercase font-semibold">
+              <tr>
+                <th class="p-4">Fecha y Hora de Salida</th>
+                <th class="p-4">Producto</th>
+                <th class="p-4 text-center">Cantidad</th>
+                <th class="p-4">Motivo</th>
+                <th class="p-4">Registrado por</th>
+                <th class="p-4 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaSalidasBody" class="divide-y divide-stone-100"></tbody>
+          </table>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <!-- MODAL: REGISTRAR / EDITAR PRODUCTO -->
-  <div id="modalProducto" class="fixed inset-0 bg-stone-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-opacity">
-    <div class="bg-white rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl border border-rosewood-100 transform transition-all">
-      <div class="px-6 py-5 border-b border-rosewood-50 flex items-center justify-between bg-rosewood-50/40">
-        <h2 id="modalTitulo" class="font-bold text-lg text-stone-900 tracking-tight">Registrar Producto</h2>
-        <button onclick="cerrarModal()" class="text-stone-400 hover:text-rosewood-600 rounded-xl p-1 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
-      </div>
-      <form id="formProducto" onsubmit="guardarProducto(event)" class="p-6 space-y-4">
+  <!-- MODAL CREAR / EDITAR PRODUCTO -->
+  <div id="modalProducto" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-stone-100">
+      <h3 id="modalTitulo" class="text-base font-bold text-stone-900">Nuevo Producto</h3>
+      <form onsubmit="guardarProducto(event)" class="space-y-3.5">
         <input type="hidden" id="prodId">
-        <div class="grid grid-cols-2 gap-4">
+        
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Código / SKU</label>
-            <input type="text" id="prodCodigo" required placeholder="Ej: MAQ-001" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm uppercase focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Código</label>
+            <input type="text" id="prodCodigo" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs uppercase outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="Ej: M01">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Categoría</label>
-            <select id="prodCategoria" required class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Categoría</label>
+            <select id="prodCategoria" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs bg-stone-50 outline-none focus:ring-2 focus:ring-rosewood-500/20">
               <option value="Maquillaje">Maquillaje</option>
               <option value="Accesorios">Accesorios</option>
               <option value="Perfumería">Perfumería</option>
             </select>
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Nombre del Producto</label>
+          <input type="text" id="prodNombre" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="Ej: Labial Mate Rojo">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Nombre</label>
-            <input type="text" id="prodNombre" required placeholder="Nombre del artículo" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Marca</label>
+            <input type="text" id="prodMarca" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="Ej: Maybelline">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Marca / Detalle</label>
-            <input type="text" id="prodMarca" placeholder="Ej: L'Oreal / 30ml" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Referencia</label>
+            <input type="text" id="prodReferencia" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="Ej: SuperStay #20">
           </div>
         </div>
+
         <div class="grid grid-cols-3 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Precio ($)</label>
-            <input type="number" id="prodPrecio" min="0" step="0.01" required placeholder="0.00" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Fecha Vencimiento</label>
+            <input type="date" id="prodFechaVencimiento" class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20 bg-stone-50">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Stock</label>
-            <input type="number" id="prodStock" min="0" required placeholder="0" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Precio ($)</label>
+            <input type="number" id="prodPrecio" min="0" step="0.01" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="0.00">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-stone-600 mb-1.5">Mínimo</label>
-            <input type="number" id="prodMinimo" min="1" required placeholder="5" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:bg-white focus:border-rosewood-400 focus:ring-4 focus:ring-rosewood-100 focus:outline-none transition">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">Stock Inicial</label>
+            <input type="number" id="prodStock" min="0" required class="w-full border border-stone-200 rounded-xl p-2.5 text-xs outline-none focus:ring-2 focus:ring-rosewood-500/20" placeholder="0">
           </div>
         </div>
-        <div class="pt-5 flex justify-end gap-3 border-t border-rosewood-50">
-          <button type="button" onclick="cerrarModal()" class="px-4 py-2 border border-stone-200 rounded-xl text-sm text-stone-600 hover:bg-stone-50 transition">Cancelar</button>
-          <button type="submit" class="px-5 py-2 bg-gradient-to-r from-rosewood-500 to-rosewood-600 text-white rounded-xl text-sm font-medium hover:from-rosewood-600 hover:to-rosewood-700 shadow-md shadow-rosewood-500/20 transition">Guardar</button>
+
+        <div class="flex justify-end gap-2 pt-4 border-t border-stone-100">
+          <button type="button" onclick="cerrarModal()" class="px-4 py-2 border border-stone-200 rounded-xl text-xs text-stone-600 hover:bg-stone-50 transition">Cancelar</button>
+          <button type="submit" class="px-4 py-2 bg-rosewood-600 hover:bg-rosewood-700 text-white rounded-xl text-xs font-medium shadow-md shadow-rosewood-600/20 transition">Guardar Producto</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-  const API_URL = '/api';
+    const API_URL = '/api';
+    let token = localStorage.getItem('token_beautystock') || null;
+    let rolUsuario = localStorage.getItem('rol_beautystock') || null;
+    let nombreUsuario = localStorage.getItem('user_beautystock') || null;
     let productos = [];
-    let usuarioActual = JSON.parse(sessionStorage.getItem('auth_user')) || null;
-    let idProductoSeleccionado = null;
+    let salidasHistorial = [];
+    let reporteDataCache = null;
 
-    // Login
+    function formatearFecha(fechaIso) {
+      if (!fechaIso) return 'N/A';
+      const f = new Date(fechaIso);
+      return f.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      });
+    }
+
+    function formatearFechaHora(fechaIso) {
+      if (!fechaIso) return 'N/A';
+      const f = new Date(fechaIso);
+      return f.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const hoy = new Date();
+      const primerDia = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+      const fmt = d => d.toISOString().split('T')[0];
+      
+      const inIni = document.getElementById('filtroFechaInicio');
+      const inFin = document.getElementById('filtroFechaFin');
+      if (inIni) inIni.value = fmt(primerDia);
+      if (inFin) inFin.value = fmt(hoy);
+
+      if (token) mostrarDashboard();
+    });
+
     async function iniciarSesion(e) {
       e.preventDefault();
-      const username = document.getElementById('loginUser').value.trim();
+      const username = document.getElementById('loginUsuario').value.trim();
       const password = document.getElementById('loginPass').value.trim();
-      const errBox = document.getElementById('loginError');
-
       try {
         const res = await fetch(`${API_URL}/login`, {
           method: 'POST',
@@ -274,333 +604,710 @@
           body: JSON.stringify({ username, password })
         });
         const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje);
 
-        if (!res.ok) {
-          errBox.innerText = data.mensaje || 'Error al iniciar sesión';
-          errBox.classList.remove('hidden');
-          return;
-        }
-
-        usuarioActual = data;
-        sessionStorage.setItem('auth_user', JSON.stringify(data));
-        errBox.classList.add('hidden');
-        verificarSesion();
+        token = data.token;
+        rolUsuario = data.rol;
+        nombreUsuario = data.username;
+        localStorage.setItem('token_beautystock', token);
+        localStorage.setItem('rol_beautystock', rolUsuario);
+        localStorage.setItem('user_beautystock', nombreUsuario);
+        mostrarDashboard();
       } catch (err) {
-        errBox.innerText = 'No se pudo conectar con el servidor (verifica node server.js)';
-        errBox.classList.remove('hidden');
+        const errorEl = document.getElementById('errorLogin');
+        errorEl.textContent = err.message || 'Error de conexión';
+        errorEl.classList.remove('hidden');
       }
     }
 
-    function cerrarSesion() {
-      sessionStorage.removeItem('auth_user');
-      usuarioActual = null;
-      idProductoSeleccionado = null;
-      verificarSesion();
+    function mostrarDashboard() {
+      document.getElementById('pantallaLogin').classList.add('hidden');
+      document.getElementById('pantallaDashboard').classList.remove('hidden');
+      document.getElementById('badgeUsuario').textContent = `${nombreUsuario} (${rolUsuario})`;
+
+      if (rolUsuario === 'admin') {
+        document.getElementById('btnNuevoProducto').classList.remove('hidden');
+        document.getElementById('thAcciones').classList.remove('hidden');
+      }
+      cambiarVista('dashboard');
     }
 
-    function verificarSesion() {
-      if (usuarioActual && usuarioActual.token) {
-        document.getElementById('vistaLogin').classList.add('hidden');
-        document.getElementById('vistaApp').classList.remove('hidden');
+    function cerrarSesion() {
+      localStorage.clear();
+      token = null;
+      location.reload();
+    }
 
-        const badge = document.getElementById('userBadge');
-        badge.innerText = `${usuarioActual.username} • ${usuarioActual.rol}`;
-        badge.className = `text-[10px] tracking-wider font-semibold px-2.5 py-0.5 rounded-full uppercase border ${
-          usuarioActual.rol === 'admin' 
-            ? 'bg-rosewood-100 text-rosewood-700 border-rosewood-200' 
-            : 'bg-stone-100 text-stone-700 border-stone-200'
-        }`;
+    function cambiarVista(vista) {
+      const secInv = document.getElementById('seccionInventario');
+      const secSal = document.getElementById('seccionSalidas');
+      const secDash = document.getElementById('seccionDashboard');
 
-        if (usuarioActual.rol !== 'admin') {
-          document.getElementById('colAcciones').classList.add('hidden');
-        } else {
-          document.getElementById('colAcciones').classList.remove('hidden');
-        }
+      const tabInv = document.getElementById('tabInv');
+      const tabSal = document.getElementById('tabSal');
+      const tabDash = document.getElementById('tabDash');
 
-        cargarProductos();
+      secInv.classList.add('hidden');
+      secSal.classList.add('hidden');
+      secDash.classList.add('hidden');
+
+      const claseInactiva = "px-4 py-2 font-medium text-xs rounded-lg text-stone-600 hover:text-black transition";
+      const claseActiva = "px-4 py-2 font-medium text-xs rounded-lg bg-white text-stone-900 shadow-sm transition";
+
+      tabInv.className = claseInactiva;
+      tabSal.className = claseInactiva;
+      tabDash.className = claseInactiva;
+
+      if (vista === 'salidas') {
+        secSal.classList.remove('hidden');
+        tabSal.className = claseActiva;
+        obtenerProductos().then(() => {
+          cargarSelectProductos();
+          cargarHistorialSalidas();
+        });
+      } else if (vista === 'inventario') {
+        secInv.classList.remove('hidden');
+        tabInv.className = claseActiva;
+        obtenerProductos();
       } else {
-        document.getElementById('vistaLogin').classList.remove('hidden');
-        document.getElementById('vistaApp').classList.add('hidden');
+        secDash.classList.remove('hidden');
+        tabDash.className = claseActiva;
+        cargarDatosDashboard();
       }
       lucide.createIcons();
     }
 
-    // Petición a MongoDB
-    async function cargarProductos() {
+    async function obtenerProductos() {
       try {
         const res = await fetch(`${API_URL}/productos`, {
-          headers: { 'Authorization': `Bearer ${usuarioActual.token}` }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.status === 401 || res.status === 403) return cerrarSesion();
         productos = await res.json();
-        renderizar();
+        renderizarTablaProductos(productos);
       } catch (err) {
-        console.error('Error al cargar productos:', err);
+        console.error(err);
       }
     }
 
-    // Control de selección
-    function seleccionarProducto(id) {
-      idProductoSeleccionado = id;
-      renderizar();
+    function renderizarTablaProductos(lista) {
+      const tbody = document.getElementById('tablaProductosBody');
+      tbody.innerHTML = '';
+      lista.forEach(p => {
+        const esBajo = p.stock <= (p.minimo || 5);
+        const fVenc = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : 'N/A';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-stone-50/70 transition">
+            <td class="p-4 font-mono font-bold text-stone-500">${p.codigo}</td>
+            <td class="p-4 font-semibold text-stone-900">${p.nombre}</td>
+            <td class="p-4 text-stone-500">${p.marca || '-'}</td>
+            <td class="p-4 text-stone-500 font-mono text-[11px]">${p.referencia || '-'}</td>
+            <td class="p-4 text-stone-500">${p.categoria}</td>
+            <td class="p-4 text-stone-500">${fVenc}</td>
+            <td class="p-4 text-right font-bold text-stone-800">$${p.precio.toFixed(2)}</td>
+            <td class="p-4 text-center font-black ${esBajo ? 'text-rosewood-600' : 'text-stone-800'}">${p.stock}</td>
+            <td class="p-4 text-center">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${esBajo ? 'bg-rosewood-100 text-rosewood-700' : 'bg-emerald-50 text-emerald-700'}">
+                ${esBajo ? 'Reordenar' : 'Óptimo'}
+              </span>
+            </td>
+            ${rolUsuario === 'admin' ? `
+              <td class="p-4 text-center space-x-2">
+                <button onclick="editarProducto('${p._id}')" class="text-stone-400 hover:text-stone-800 transition" title="Editar">
+                  <i data-lucide="edit" class="w-4 h-4 inline"></i>
+                </button>
+                <button onclick="eliminarProducto('${p._id}')" class="text-stone-400 hover:text-rosewood-600 transition" title="Eliminar">
+                  <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                </button>
+              </td>
+            ` : ''}
+          </tr>
+        `;
+      });
+      lucide.createIcons();
     }
 
-    function deseleccionarProducto() {
-      idProductoSeleccionado = null;
-      renderizar();
+    function filtrarProductos() {
+      const query = document.getElementById('busquedaInput').value.toLowerCase();
+      const filtrados = productos.filter(p => 
+        p.nombre.toLowerCase().includes(query) || 
+        p.codigo.toLowerCase().includes(query) ||
+        (p.marca && p.marca.toLowerCase().includes(query)) ||
+        (p.referencia && p.referencia.toLowerCase().includes(query)) ||
+        p.categoria.toLowerCase().includes(query)
+      );
+      renderizarTablaProductos(filtrados);
     }
 
-    // Modal
-    function abrirModal(id = null) {
-      const modal = document.getElementById('modalProducto');
-      const form = document.getElementById('formProducto');
-      form.reset();
+    // --- CARGA Y RENDERIZADO DEL DASHBOARD ANALÍTICO ---
+    async function cargarDatosDashboard() {
+      try {
+        const [resProd, resSal, resAlertas] = await Promise.all([
+          fetch(`${API_URL}/productos`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/salidas`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_URL}/reportes/alertas-inventario`, { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
 
-      if (id) {
-        document.getElementById('modalTitulo').innerText = 'Editar Producto';
-        const item = productos.find(p => p._id === id);
-        if (item) {
-          document.getElementById('prodId').value = item._id;
-          document.getElementById('prodCodigo').value = item.codigo;
-          document.getElementById('prodCategoria').value = item.categoria;
-          document.getElementById('prodNombre').value = item.nombre;
-          document.getElementById('prodMarca').value = item.marca || '';
-          document.getElementById('prodPrecio').value = item.precio;
-          document.getElementById('prodStock').value = item.stock;
-          document.getElementById('prodMinimo').value = item.minimo;
+        if (resProd.status === 401 || resSal.status === 401) return cerrarSesion();
+
+        productos = await resProd.json();
+        salidasHistorial = await resSal.json();
+        const alertasData = await resAlertas.json();
+
+        // 1. Renderizar Alertas de Vencimiento
+        renderizarAlertasVencimiento(alertasData.porVencer || []);
+
+        // 2. Aplicar filtros en tabla principal
+        aplicarFiltroCategoriaDashboard();
+
+        // 3. Ejecutar ventas
+        const inicio = document.getElementById('filtroFechaInicio').value;
+        const fin = document.getElementById('filtroFechaFin').value;
+        if (inicio && fin) {
+          ejecutarConsultaVentas(inicio, fin);
         }
-      } else {
-        document.getElementById('modalTitulo').innerText = 'Registrar Nuevo Producto';
-        document.getElementById('prodId').value = '';
-        document.getElementById('prodMinimo').value = 5;
+
+      } catch (err) {
+        console.error('Error al cargar datos del dashboard:', err);
       }
-      modal.classList.remove('hidden');
+    }
+
+    function renderizarAlertasVencimiento(listaPorVencer) {
+      const contenedor = document.getElementById('contenedorAlertaVencimiento');
+      const badge = document.getElementById('badgeContadorPorVencer');
+      const kpi = document.getElementById('dashInvKpiPorVencer');
+      const tbody = document.getElementById('tablaAlertasVencimientoBody');
+
+      tbody.innerHTML = '';
+      kpi.textContent = listaPorVencer.length;
+
+      if (!listaPorVencer || listaPorVencer.length === 0) {
+        contenedor.classList.add('hidden');
+        return;
+      }
+
+      contenedor.classList.remove('hidden');
+      badge.textContent = listaPorVencer.length;
+
+      listaPorVencer.forEach(p => {
+        const esVencido = p.diasRestantes < 0;
+        const colorBadge = esVencido 
+          ? 'bg-rosewood-600 text-white animate-pulse' 
+          : (p.diasRestantes <= 7 ? 'bg-amber-600 text-white' : 'bg-amber-100 text-amber-900 border border-amber-300');
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-amber-50/50 transition">
+            <td class="p-3 font-mono font-bold text-amber-950">${p.codigo}</td>
+            <td class="p-3 font-semibold text-stone-900">${p.nombre}</td>
+            <td class="p-3 text-stone-500">${p.marca} <span class="text-[10px] text-stone-400 font-mono">(${p.referencia})</span></td>
+            <td class="p-3 text-stone-500">${p.categoria}</td>
+            <td class="p-3 font-medium text-stone-800">${formatearFecha(p.fechaVencimiento)}</td>
+            <td class="p-3 text-center font-black text-stone-900">${p.stock}</td>
+            <td class="p-3 text-center">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${colorBadge}">
+                ${p.estado}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+      lucide.createIcons();
+    }
+
+    function toggleTablaVencimientos() {
+      const tabla = document.getElementById('tablaVencimientosColapsable');
+      const texto = document.getElementById('textoToggleVencimiento');
+      if (tabla.classList.contains('hidden')) {
+        tabla.classList.remove('hidden');
+        texto.textContent = 'Ocultar Detalle';
+      } else {
+        tabla.classList.add('hidden');
+        texto.textContent = 'Ver Detalle';
+      }
+    }
+
+    function aplicarFiltroCategoriaDashboard() {
+      const cat = document.getElementById('filtroCategoriaDash').value;
+      const badge = document.getElementById('badgeFiltroActivo');
+      badge.textContent = cat === 'TODAS' ? 'Todas' : cat;
+
+      const prodsFiltrados = cat === 'TODAS' 
+        ? productos 
+        : productos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+
+      let valorTotalStock = 0;
+      let unidadesTotalStock = 0;
+      const tbodyProd = document.getElementById('tablaDashProductosBody');
+      tbodyProd.innerHTML = '';
+
+      prodsFiltrados.forEach(p => {
+        const val = (p.precio || 0) * (p.stock || 0);
+        valorTotalStock += val;
+        unidadesTotalStock += (p.stock || 0);
+        const bajo = p.stock <= (p.minimo || 5);
+        const fVenc = p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : 'N/A';
+
+        tbodyProd.innerHTML += `
+          <tr class="hover:bg-stone-50/70 transition">
+            <td class="p-3 font-mono font-bold text-stone-500">${p.codigo}</td>
+            <td class="p-3 font-medium text-stone-900">${p.nombre}</td>
+            <td class="p-3 text-stone-500">${p.marca || '-'}</td>
+            <td class="p-3 text-stone-500 font-mono text-[11px]">${p.referencia || '-'}</td>
+            <td class="p-3 text-stone-500">${p.categoria}</td>
+            <td class="p-3 text-stone-500">${fVenc}</td>
+            <td class="p-3 text-right font-semibold text-stone-700">$${(p.precio || 0).toFixed(2)}</td>
+            <td class="p-3 text-center font-bold">${p.stock}</td>
+            <td class="p-3 text-right font-black text-emerald-800">$${val.toFixed(2)}</td>
+            <td class="p-3 text-center">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase ${bajo ? 'bg-rosewood-100 text-rosewood-700' : 'bg-emerald-50 text-emerald-700'}">
+                ${bajo ? 'Bajo' : 'OK'}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('dashInvValorTotal').textContent = `$${valorTotalStock.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      document.getElementById('dashInvStockTotal').textContent = unidadesTotalStock;
+      document.getElementById('dashInvReferencias').textContent = prodsFiltrados.length;
+
+      if (prodsFiltrados.length === 0) {
+        tbodyProd.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-xs text-stone-400">No hay productos registrados en la categoría "${cat}"</td></tr>`;
+      }
+    }
+
+    // --- FILTRAR REPORTE DE VENTAS POR FECHAS Y CATEGORÍA ---
+    async function consultarReporteVentas(e) {
+      if (e) e.preventDefault();
+      const inicio = document.getElementById('filtroFechaInicio').value;
+      const fin = document.getElementById('filtroFechaFin').value;
+      await ejecutarConsultaVentas(inicio, fin);
+    }
+
+    async function ejecutarConsultaVentas(inicio, fin) {
+      const cat = document.getElementById('filtroCategoriaGanancias').value;
+      const labelCat = document.getElementById('labelReporteCategoria');
+      labelCat.textContent = cat === 'TODAS' ? 'Todas las categorías' : `Categoría: ${cat}`;
+
+      try {
+        const res = await fetch(`${API_URL}/reportes/ventas?inicio=${inicio}&fin=${fin}&categoria=${cat}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje);
+
+        reporteDataCache = data;
+
+        document.getElementById('reporteTotalDinero').textContent = `$${data.totalIngresos.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        document.getElementById('reporteTotalUnidades').textContent = data.totalUnidadesVendidas;
+        document.getElementById('reporteTotalTransacciones').textContent = data.conteoVentas;
+
+        renderizarTablasGanancias(data);
+
+      } catch (error) {
+        alert(error.message || 'Error al obtener reporte de ventas');
+      }
+    }
+
+    function renderizarTablasGanancias(data) {
+      // 1. Ganancias por Día
+      const tbodyDia = document.getElementById('tablaGananciasDiaBody');
+      tbodyDia.innerHTML = '';
+      if (!data.resumenPorDia || data.resumenPorDia.length === 0) {
+        tbodyDia.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-stone-400">No hay ventas registradas con los filtros seleccionados</td></tr>`;
+      } else {
+        data.resumenPorDia.forEach(d => {
+          tbodyDia.innerHTML += `
+            <tr class="hover:bg-stone-50/70 transition">
+              <td class="p-3 font-semibold text-stone-800">${d.fecha}</td>
+              <td class="p-3 text-center font-bold text-stone-700">${d.unidades}</td>
+              <td class="p-3 text-center text-stone-500">${d.operaciones}</td>
+              <td class="p-3 text-right font-black text-emerald-800">$${d.total.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 2. Ganancias por Semana
+      const tbodySem = document.getElementById('tablaGananciasSemanaBody');
+      tbodySem.innerHTML = '';
+      if (!data.resumenPorSemana || data.resumenPorSemana.length === 0) {
+        tbodySem.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-stone-400">No hay ventas registradas con los filtros seleccionados</td></tr>`;
+      } else {
+        data.resumenPorSemana.forEach(s => {
+          tbodySem.innerHTML += `
+            <tr class="hover:bg-stone-50/70 transition">
+              <td class="p-3 font-semibold text-stone-800">${s.periodo}</td>
+              <td class="p-3 text-center font-bold text-stone-700">${s.unidades}</td>
+              <td class="p-3 text-center text-stone-500">${s.operaciones}</td>
+              <td class="p-3 text-right font-black text-emerald-800">$${s.total.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 3. Ganancias por Quincena
+      const tbodyQuin = document.getElementById('tablaGananciasQuincenaBody');
+      tbodyQuin.innerHTML = '';
+      if (!data.resumenPorQuincena || data.resumenPorQuincena.length === 0) {
+        tbodyQuin.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-xs text-stone-400">No hay ventas registradas con los filtros seleccionados</td></tr>`;
+      } else {
+        data.resumenPorQuincena.forEach(q => {
+          tbodyQuin.innerHTML += `
+            <tr class="hover:bg-stone-50/70 transition">
+              <td class="p-3 font-semibold text-stone-800">${q.periodo}</td>
+              <td class="p-3 text-center font-bold text-stone-700">${q.unidades}</td>
+              <td class="p-3 text-center text-stone-500">${q.operaciones}</td>
+              <td class="p-3 text-right font-black text-emerald-800">$${q.total.toFixed(2)}</td>
+            </tr>
+          `;
+        });
+      }
+
+      // 4. Detalle individual
+      const tbodyDetalle = document.getElementById('tablaReporteVentasBody');
+      tbodyDetalle.innerHTML = '';
+      if (!data.detalles || data.detalles.length === 0) {
+        tbodyDetalle.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-xs text-stone-400">No se encontraron ventas individuales</td></tr>`;
+      } else {
+        data.detalles.forEach(v => {
+          const subtotal = (v.cantidad || 0) * (v.precioUnitario || 0);
+          const catProd = (v.productoId && v.productoId.categoria) ? v.productoId.categoria : 'General';
+          tbodyDetalle.innerHTML += `
+            <tr class="hover:bg-stone-50/70 transition">
+              <td class="p-3 text-stone-500">${formatearFechaHora(v.createdAt)}</td>
+              <td class="p-3 font-mono font-bold text-stone-500">${v.codigoProducto}</td>
+              <td class="p-3 font-semibold text-stone-900">${v.nombreProducto}</td>
+              <td class="p-3 text-stone-500">${catProd}</td>
+              <td class="p-3 text-center font-bold text-stone-800">${v.cantidad}</td>
+              <td class="p-3 text-right text-stone-600">$${(v.precioUnitario || 0).toFixed(2)}</td>
+              <td class="p-3 text-right font-black text-emerald-800">$${subtotal.toFixed(2)}</td>
+              <td class="p-3 text-stone-500">${v.usuario}</td>
+            </tr>
+          `;
+        });
+      }
+    }
+
+    function cambiarSubTabGanancias(tipo) {
+      const tabs = ['dia', 'semana', 'quincena', 'detalle'];
+      tabs.forEach(t => {
+        const mayus = t.charAt(0).toUpperCase() + t.slice(1);
+        const btn = document.getElementById(`subTab${mayus}`);
+        const vista = document.getElementById(`vistaGanancia${mayus}`);
+        if (t === tipo) {
+          btn.className = "px-3.5 py-1.5 font-bold text-xs rounded-xl bg-white text-stone-900 shadow-sm transition";
+          vista.classList.remove('hidden');
+        } else {
+          btn.className = "px-3.5 py-1.5 font-semibold text-xs rounded-xl text-stone-500 hover:text-stone-800 transition";
+          vista.classList.add('hidden');
+        }
+      });
+    }
+
+    // ==========================================================
+    // EXPORTACIÓN A EXCEL
+    // ==========================================================
+
+    function exportarExcelInventario() {
+      const cat = document.getElementById('filtroCategoriaDash').value;
+      const prods = cat === 'TODAS' 
+        ? productos 
+        : productos.filter(p => p.categoria.toLowerCase() === cat.toLowerCase());
+
+      if (!prods || prods.length === 0) {
+        return alert(`No hay productos en la categoría ${cat} para exportar.`);
+      }
+
+      const datosExcel = prods.map(p => ({
+        "Fecha y Hora de Registro": formatearFechaHora(p.createdAt),
+        "Código": p.codigo,
+        "Producto": p.nombre,
+        "Marca": p.marca || 'N/A',
+        "Referencia": p.referencia || 'N/A',
+        "Categoría": p.categoria,
+        "Fecha Vencimiento": p.fechaVencimiento ? formatearFecha(p.fechaVencimiento) : 'N/A',
+        "Precio Unitario ($)": p.precio,
+        "Stock Actual": p.stock,
+        "Stock Mínimo": p.minimo || 5,
+        "Valor Total en Stock ($)": Number((p.precio * p.stock).toFixed(2)),
+        "Estado": p.stock <= (p.minimo || 5) ? 'REORDENAR (STOCK BAJO)' : 'ÓPTIMO'
+      }));
+
+      const hoja = XLSX.utils.json_to_sheet(datosExcel);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, `Inventario_${cat}`);
+      
+      const fechaHoy = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(libro, `BeautyStock_Inventario_${cat}_${fechaHoy}.xlsx`);
+    }
+
+    function exportarExcelSalidas() {
+      if (!salidasHistorial || salidasHistorial.length === 0) {
+        return alert('No hay salidas registradas para exportar.');
+      }
+
+      const datosExcel = salidasHistorial.map(s => {
+        const total = (s.cantidad || 0) * (s.precioUnitario || 0);
+        return {
+          "Fecha y Hora de Salida": formatearFechaHora(s.createdAt),
+          "Código": s.codigoProducto,
+          "Producto": s.nombreProducto,
+          "Cantidad Salida": s.cantidad,
+          "Motivo": s.motivo,
+          "Precio Unitario ($)": s.precioUnitario || 0,
+          "Total Operación ($)": Number(total.toFixed(2)),
+          "Usuario Registrador": s.usuario
+        };
+      });
+
+      const hoja = XLSX.utils.json_to_sheet(datosExcel);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Salidas_Detalladas");
+      
+      const fechaHoy = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(libro, `BeautyStock_Salidas_Detalladas_${fechaHoy}.xlsx`);
+    }
+
+    function exportarExcelVentasFiltradas() {
+      if (!reporteDataCache || !reporteDataCache.detalles || reporteDataCache.detalles.length === 0) {
+        return alert('No hay ventas en el período filtrado para exportar.');
+      }
+
+      const inicio = document.getElementById('filtroFechaInicio').value;
+      const fin = document.getElementById('filtroFechaFin').value;
+      const cat = document.getElementById('filtroCategoriaGanancias').value;
+
+      const libro = XLSX.utils.book_new();
+
+      if (reporteDataCache.resumenPorDia.length > 0) {
+        const hojaDia = XLSX.utils.json_to_sheet(reporteDataCache.resumenPorDia.map(d => ({
+          "Fecha": d.fecha,
+          "Unidades Vendidas": d.unidades,
+          "Operaciones": d.operaciones,
+          "Ganancia Total ($)": Number(d.total.toFixed(2))
+        })));
+        XLSX.utils.book_append_sheet(libro, hojaDia, "Ganancias_Por_Dia");
+      }
+
+      if (reporteDataCache.resumenPorSemana.length > 0) {
+        const hojaSem = XLSX.utils.json_to_sheet(reporteDataCache.resumenPorSemana.map(s => ({
+          "Semana": s.periodo,
+          "Unidades": s.unidades,
+          "Operaciones": s.operaciones,
+          "Ganancia Total ($)": Number(s.total.toFixed(2))
+        })));
+        XLSX.utils.book_append_sheet(libro, hojaSem, "Ganancias_Por_Semana");
+      }
+
+      if (reporteDataCache.resumenPorQuincena.length > 0) {
+        const hojaQuin = XLSX.utils.json_to_sheet(reporteDataCache.resumenPorQuincena.map(q => ({
+          "Quincena": q.periodo,
+          "Unidades": q.unidades,
+          "Operaciones": q.operaciones,
+          "Ganancia Total ($)": Number(q.total.toFixed(2))
+        })));
+        XLSX.utils.book_append_sheet(libro, hojaQuin, "Ganancias_Por_Quincena");
+      }
+
+      const hojaDetalle = XLSX.utils.json_to_sheet(reporteDataCache.detalles.map(v => {
+        const subtotal = (v.cantidad || 0) * (v.precioUnitario || 0);
+        const catProd = (v.productoId && v.productoId.categoria) ? v.productoId.categoria : 'General';
+        return {
+          "Fecha y Hora de Venta": formatearFechaHora(v.createdAt),
+          "Código": v.codigoProducto,
+          "Producto": v.nombreProducto,
+          "Categoría": catProd,
+          "Cantidad": v.cantidad,
+          "Precio Venta ($)": v.precioUnitario || 0,
+          "Subtotal Recaudado ($)": Number(subtotal.toFixed(2)),
+          "Vendedor": v.usuario
+        };
+      }));
+      XLSX.utils.book_append_sheet(libro, hojaDetalle, "Detalle_Transacciones");
+
+      XLSX.writeFile(libro, `BeautyStock_Reporte_${cat}_${inicio}_al_${fin}.xlsx`);
+    }
+
+    // --- REGISTRO DE SALIDAS ---
+    function cargarSelectProductos() {
+      const select = document.getElementById('salidaProductoSelect');
+      if (!select) return;
+      select.innerHTML = '<option value="">Seleccione un producto...</option>';
+      productos.forEach(p => {
+        select.innerHTML += `<option value="${p._id}">${p.nombre} (Stock: ${p.stock})</option>`;
+      });
+    }
+
+    async function cargarHistorialSalidas() {
+      try {
+        const res = await fetch(`${API_URL}/salidas`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        const tbody = document.getElementById('tablaSalidasBody');
+        tbody.innerHTML = '';
+        data.forEach(s => {
+          tbody.innerHTML += `
+            <tr class="hover:bg-stone-50/70 transition">
+              <td class="p-4 text-stone-500 font-medium">${formatearFechaHora(s.createdAt)}</td>
+              <td class="p-4 font-semibold text-stone-900">${s.nombreProducto} <span class="font-mono text-xs text-stone-400 font-normal">(${s.codigoProducto})</span></td>
+              <td class="p-4 text-center font-black text-rosewood-600">-${s.cantidad}</td>
+              <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-stone-100 text-stone-700">${s.motivo}</span></td>
+              <td class="p-4 text-stone-500">${s.usuario}</td>
+              <td class="p-4 text-center">
+                ${rolUsuario === 'admin' ? `
+                  <button onclick="eliminarSalida('${s._id}')" title="Eliminar registro y reponer stock" class="p-1 text-stone-400 hover:text-rosewood-600 transition">
+                    <i data-lucide="trash-2" class="w-4 h-4 inline"></i>
+                  </button>
+                ` : '<span class="text-xs text-stone-300">-</span>'}
+              </td>
+            </tr>
+          `;
+        });
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function registrarSalida(e) {
+      e.preventDefault();
+      const productoId = document.getElementById('salidaProductoSelect').value;
+      const cantidad = document.getElementById('salidaCantidad').value;
+      const motivo = document.getElementById('salidaMotivo').value;
+
+      try {
+        const res = await fetch(`${API_URL}/salidas`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ productoId, cantidad, motivo })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje);
+
+        alert('Salida registrada y stock descontado con éxito.');
+        document.getElementById('formSalida').reset();
+        await obtenerProductos();
+        cargarSelectProductos();
+        cargarHistorialSalidas();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function eliminarSalida(id) {
+      if (!confirm('¿Deseas eliminar este registro de salida?\n\nLas unidades descontadas se reintegrarán automáticamente al stock del producto.')) return;
+      try {
+        const res = await fetch(`${API_URL}/salidas/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje || 'Error al eliminar salida');
+
+        alert(data.mensaje);
+        await obtenerProductos();
+        cargarSelectProductos();
+        cargarHistorialSalidas();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // --- ACCIONES DE PRODUCTOS ---
+    function abrirModal() {
+      document.getElementById('prodId').value = '';
+      document.getElementById('modalTitulo').textContent = 'Nuevo Producto';
+      document.getElementById('prodCodigo').value = '';
+      document.getElementById('prodNombre').value = '';
+      document.getElementById('prodMarca').value = '';
+      document.getElementById('prodReferencia').value = '';
+      document.getElementById('prodFechaVencimiento').value = '';
+      document.getElementById('prodPrecio').value = '';
+      document.getElementById('prodStock').value = '';
+      document.getElementById('modalProducto').classList.remove('hidden');
     }
 
     function cerrarModal() {
       document.getElementById('modalProducto').classList.add('hidden');
     }
 
-    // Guardar / Actualizar
+    function editarProducto(id) {
+      const prod = productos.find(p => p._id === id);
+      if (!prod) return;
+      document.getElementById('prodId').value = prod._id;
+      document.getElementById('modalTitulo').textContent = 'Editar Producto';
+      document.getElementById('prodCodigo').value = prod.codigo;
+      document.getElementById('prodNombre').value = prod.nombre;
+      document.getElementById('prodMarca').value = prod.marca || '';
+      document.getElementById('prodReferencia').value = prod.referencia || '';
+      document.getElementById('prodFechaVencimiento').value = prod.fechaVencimiento ? prod.fechaVencimiento.split('T')[0] : '';
+      document.getElementById('prodCategoria').value = prod.categoria;
+      document.getElementById('prodPrecio').value = prod.precio;
+      document.getElementById('prodStock').value = prod.stock;
+      document.getElementById('modalProducto').classList.remove('hidden');
+    }
+
     async function guardarProducto(e) {
       e.preventDefault();
       const id = document.getElementById('prodId').value;
-      const datos = {
-        codigo: document.getElementById('prodCodigo').value.trim().toUpperCase(),
-        categoria: document.getElementById('prodCategoria').value,
+      const fVencVal = document.getElementById('prodFechaVencimiento').value;
+
+      const body = {
+        codigo: document.getElementById('prodCodigo').value.trim(),
         nombre: document.getElementById('prodNombre').value.trim(),
+        categoria: document.getElementById('prodCategoria').value,
         marca: document.getElementById('prodMarca').value.trim(),
+        referencia: document.getElementById('prodReferencia').value.trim(),
+        fechaVencimiento: fVencVal ? fVencVal : null,
         precio: parseFloat(document.getElementById('prodPrecio').value),
-        stock: parseInt(document.getElementById('prodStock').value, 10),
-        minimo: parseInt(document.getElementById('prodMinimo').value, 10)
+        stock: parseInt(document.getElementById('prodStock').value, 10)
       };
 
-      const url = id ? `${API_URL}/productos/${id}` : `${API_URL}/productos`;
-      const metodo = id ? 'PUT' : 'POST';
-
       try {
+        const url = id ? `${API_URL}/productos/${id}` : `${API_URL}/productos`;
+        const method = id ? 'PUT' : 'POST';
         const res = await fetch(url, {
-          method: metodo,
+          method,
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${usuarioActual.token}`
+            'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify(datos)
+          body: JSON.stringify(body)
         });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje);
 
-        if (res.ok) {
-          cerrarModal();
-          cargarProductos();
-        } else {
-          const error = await res.json();
-          alert(error.mensaje || error.detalle || 'Error al guardar');
-        }
+        cerrarModal();
+        obtenerProductos();
       } catch (err) {
-        alert('Error de conexión con el servidor');
+        alert(err.message);
       }
     }
 
-    // Eliminar
     async function eliminarProducto(id) {
-      if (confirm('¿Deseas eliminar este registro de inventario permanentemente?')) {
-        try {
-          const res = await fetch(`${API_URL}/productos/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${usuarioActual.token}` }
-          });
-          if (res.ok) {
-            if (idProductoSeleccionado === id) idProductoSeleccionado = null;
-            cargarProductos();
-          } else {
-            alert('No tienes permisos para realizar esta acción');
-          }
-        } catch (err) {
-          alert('Error de conexión al eliminar');
-        }
-      }
-    }
-
-    // Ajuste de stock rápido
-    async function ajustarStock(id, delta) {
+      if (!confirm('¿Deseas eliminar este producto?\n\nADVERTENCIA: Esta acción eliminará automáticamente todos sus registros históricos de ventas y salidas.')) return;
       try {
-        const res = await fetch(`${API_URL}/productos/${id}/stock`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${usuarioActual.token}`
-          },
-          body: JSON.stringify({ delta })
+        const res = await fetch(`${API_URL}/productos/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
         });
-        if (res.ok) cargarProductos();
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.mensaje || 'Error al eliminar');
+
+        alert(data.mensaje);
+        await obtenerProductos();
+        cargarSelectProductos();
+        cargarHistorialSalidas();
       } catch (err) {
-        console.error(err);
+        alert(err.message);
       }
     }
-
-    function filtrar() {
-      idProductoSeleccionado = null;
-      renderizar();
-    }
-
-    // Renderizar datos y estadísticas dinámicas
-    function renderizar() {
-      const tbody = document.getElementById('tablaProductos');
-      const emptyMsg = document.getElementById('sinResultados');
-      const banner = document.getElementById('bannerFiltroIndividual');
-      const barraBusqueda = document.getElementById('barraBusqueda');
-      tbody.innerHTML = '';
-      const esAdmin = usuarioActual && usuarioActual.rol === 'admin';
-
-      let listaAMostrar = [];
-
-      if (idProductoSeleccionado) {
-        const pSel = productos.find(p => p._id === idProductoSeleccionado);
-        if (pSel) {
-          listaAMostrar = [pSel];
-          banner.classList.remove('hidden');
-          barraBusqueda.classList.add('hidden');
-          document.getElementById('lblProductoSeleccionado').innerText = `${pSel.nombre} (${pSel.codigo})`;
-
-          document.getElementById('lblStat1').innerText = "SKU Seleccionado";
-          document.getElementById('statTotalItems').innerText = pSel.codigo;
-
-          document.getElementById('lblStat2').innerText = "Stock Actual";
-          document.getElementById('statTotalStock').innerText = pSel.stock;
-
-          document.getElementById('lblStat3').innerText = "Valor en Stock";
-          document.getElementById('statTotalValue').innerText = `$${(pSel.precio * pSel.stock).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-
-          document.getElementById('lblStat4').innerText = "Mínimo Requerido";
-          document.getElementById('statLowStock').innerText = pSel.minimo;
-        } else {
-          idProductoSeleccionado = null;
-        }
-      }
-
-      if (!idProductoSeleccionado) {
-        banner.classList.add('hidden');
-        barraBusqueda.classList.remove('hidden');
-
-        const query = document.getElementById('busqueda').value.toLowerCase();
-        const cat = document.getElementById('filtroCategoria').value;
-
-        listaAMostrar = productos.filter(p => {
-          const matchTxt = p.nombre.toLowerCase().includes(query) || 
-                           p.codigo.toLowerCase().includes(query) || 
-                           (p.marca && p.marca.toLowerCase().includes(query));
-          const matchCat = !cat || p.categoria === cat;
-          return matchTxt && matchCat;
-        });
-
-        document.getElementById('lblStat1').innerText = cat ? `Ref. (${cat})` : "Total Referencias";
-        document.getElementById('lblStat2').innerText = cat ? `Stock (${cat})` : "Stock Total";
-        document.getElementById('lblStat3').innerText = cat ? `Valor (${cat})` : "Valor Inventario";
-        document.getElementById('lblStat4').innerText = "Reordenar (Bajo)";
-
-        document.getElementById('statTotalItems').innerText = listaAMostrar.length;
-        document.getElementById('statTotalStock').innerText = listaAMostrar.reduce((acc, curr) => acc + curr.stock, 0);
-
-        const totalVal = listaAMostrar.reduce((acc, curr) => acc + (curr.precio * curr.stock), 0);
-        document.getElementById('statTotalValue').innerText = `$${totalVal.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-
-        document.getElementById('statLowStock').innerText = listaAMostrar.filter(p => p.stock <= p.minimo).length;
-      }
-
-      // Dibujar tabla
-      if (listaAMostrar.length === 0) {
-        emptyMsg.classList.remove('hidden');
-      } else {
-        emptyMsg.classList.add('hidden');
-        listaAMostrar.forEach(p => {
-          const bajoStock = p.stock <= p.minimo;
-          const tr = document.createElement('tr');
-          const estaSeleccionado = idProductoSeleccionado === p._id;
-
-          tr.className = `cursor-pointer transition-all border-b border-rosewood-50 ${
-            estaSeleccionado ? 'bg-rosewood-50/80 border-l-4 border-l-rosewood-500' : 'hover:bg-rosewood-50/30'
-          }`;
-
-          tr.onclick = (e) => {
-            if (e.target.closest('button')) return;
-            if (idProductoSeleccionado === p._id) deseleccionarProducto();
-            else seleccionarProducto(p._id);
-          };
-
-          tr.innerHTML = `
-            <td class="py-4 px-5 font-mono text-xs font-semibold text-stone-500">
-              <div class="flex items-center gap-2">
-                <i data-lucide="${estaSeleccionado ? 'check-circle-2' : 'circle'}" class="w-3.5 h-3.5 ${estaSeleccionado ? 'text-rosewood-600' : 'text-stone-300'}"></i>
-                <span>${p.codigo}</span>
-              </div>
-            </td>
-            <td class="py-4 px-5">
-              <div class="font-medium text-stone-900">${p.nombre}</div>
-              <div class="text-xs text-stone-400">${p.marca || '-'}</div>
-            </td>
-            <td class="py-4 px-5">
-              <span class="inline-block px-3 py-1 rounded-full text-xs font-medium border
-                ${p.categoria === 'Maquillaje' ? 'bg-rose-50 text-rose-700 border-rose-100' : ''}
-                ${p.categoria === 'Accesorios' ? 'bg-purple-50 text-purple-700 border-purple-100' : ''}
-                ${p.categoria === 'Perfumería' ? 'bg-amber-50 text-amber-800 border-amber-100' : ''}">
-                ${p.categoria}
-              </span>
-            </td>
-            <td class="py-4 px-5 text-right font-medium text-stone-800 font-mono">$${p.precio.toFixed(2)}</td>
-            <td class="py-4 px-5 text-center">
-              ${esAdmin ? `
-                <div class="inline-flex items-center gap-1.5 bg-stone-100 p-1 rounded-xl">
-                  <button onclick="ajustarStock('${p._id}', -1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-white hover:bg-rosewood-100 text-xs font-bold text-stone-700 transition">-</button>
-                  <span class="w-8 font-bold text-sm text-stone-800">${p.stock}</span>
-                  <button onclick="ajustarStock('${p._id}', 1)" class="w-6 h-6 flex items-center justify-center rounded-lg bg-white hover:bg-rosewood-100 text-xs font-bold text-stone-700 transition">+</button>
-                </div>
-              ` : `<span class="font-bold text-sm text-stone-800">${p.stock}</span>`}
-            </td>
-            <td class="py-4 px-5 text-center">
-              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium border ${bajoStock ? 'bg-rose-50 text-rose-600 border-rose-200' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}">
-                ${bajoStock ? 'Reordenar' : 'Óptimo'}
-              </span>
-            </td>
-            ${esAdmin ? `
-              <td class="py-4 px-5 text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <button onclick="abrirModal('${p._id}')" title="Editar" class="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-rosewood-50 rounded-lg transition">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i>
-                  </button>
-                  <button onclick="eliminarProducto('${p._id}')" title="Eliminar" class="p-1.5 text-stone-400 hover:text-rosewood-600 hover:bg-rosewood-50 rounded-lg transition">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                  </button>
-                </div>
-              </td>
-            ` : ''}
-          `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      lucide.createIcons();
-    }
-
-    window.onload = verificarSesion;
   </script>
 </body>
 </html>
